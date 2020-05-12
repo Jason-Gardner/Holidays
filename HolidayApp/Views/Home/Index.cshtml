@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Holiday
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    @if (Model != null)
+    {
+        if (Model.name != null)
+        {
+            <h3>Today is @Model.name</h3>
+        }
+
+    }
+
+    @if (ViewBag.No != null)
+    {
+        <h3>@ViewBag.No</h3>
+    }
+
+    <a class="badge" asp-action="DateCheck" asp-controller="Home">Check for Any Holidays Today!</a>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
