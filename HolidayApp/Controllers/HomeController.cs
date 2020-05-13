@@ -17,7 +17,7 @@ namespace HolidayApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private IConfiguration _config;
         private JsonDocument jDoc;
-        List<Holiday> holidayList = new List<Holiday>();
+        public List<Holiday> holidayList = new List<Holiday>();
         public Holiday newDay = new Holiday();
 
         public HomeController(ILogger<HomeController> logger, IConfiguration config)
@@ -26,18 +26,14 @@ namespace HolidayApp.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            if (holidayList.Count() == 0)
-            {
-                holidayList = await BuildList();
-            }
-
             return View();
         }
 
-        public IActionResult DateCheck()
+        public async Task<IActionResult> DateCheck()
         {
+            holidayList = await BuildList();
             Holiday tempDay = new Holiday();
 
             foreach (Holiday holiday in holidayList)
@@ -47,6 +43,17 @@ namespace HolidayApp.Controllers
                     if (holiday.day == DateTime.Now.Day)
                     {
                         tempDay = holiday;
+                    }
+
+                    if (holiday.day > DateTime.Now.Day)
+                    {
+                        if (tempDay.name == null)
+                        {
+                            ViewBag.No = "There are no holidays today.";
+                        }
+
+                        tempDay = holiday;
+                        return View("Index", tempDay);
                     }
                 }
             }
@@ -78,11 +85,13 @@ namespace HolidayApp.Controllers
 
                         for (int i = 0; i < list.GetArrayLength(); i++)
                         {
-                            newDay.name = list[i].GetProperty("name").ToString();
-                            newDay.day = list[i].GetProperty("date").GetProperty("datetime").GetProperty("day").GetInt32();
-                            newDay.month = list[i].GetProperty("date").GetProperty("datetime").GetProperty("month").GetInt32();
-
-                            holidayList.Add(newDay);
+                            holidayList.Add(new Holiday()
+                            {
+                                name = list[i].GetProperty("name").ToString(),
+                                day = list[i].GetProperty("date").GetProperty("datetime").GetProperty("day").GetInt32(),
+                                month = list[i].GetProperty("date").GetProperty("datetime").GetProperty("month").GetInt32()
+                            }
+                            );
                         }
 
                     }

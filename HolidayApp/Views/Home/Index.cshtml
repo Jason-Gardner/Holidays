@@ -5,12 +5,20 @@
 @model Holiday
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Is today a holiday?</h1>
     @if (Model != null)
     {
         if (Model.name != null)
         {
-            <h3>Today is @Model.name</h3>
+            if(Model.day == DateTime.Now.Day)
+            {
+                <h3>Today is @Model.name</h3>
+            }
+            else
+            {
+                <h4>The next holiday is @Model.name on @Model.month/@Model.day/2020.</h4>
+            }
+
         }
 
     }
@@ -21,5 +29,4 @@
     }
 
     <a class="badge" asp-action="DateCheck" asp-controller="Home">Check for Any Holidays Today!</a>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
