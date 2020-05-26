@@ -33,37 +33,75 @@ namespace HolidayApp.Controllers
 
         public async Task<IActionResult> DateCheck()
         {
+            ViewBag.Today = null;
             holidayList = await BuildList();
-            Holiday tempDay = new Holiday();
+            List<Holiday> tempList = new List<Holiday>();
+
+            foreach (Holiday holiday in holidayList)
+            {
+                if (holiday.month == DateTime.Now.Month && holiday.day == DateTime.Now.Day)
+                {
+                    ViewBag.Today = ($"Today is {holiday.name}!");
+                }
+            }
+
+            if (tempList.Count == 0)
+            {
+                ViewBag.Today = "There are no holidays today.";
+            }
+
+            return View("Index", tempList);
+        }
+
+        public async Task<IActionResult> NextCheck()
+        {
+            holidayList = await BuildList();
+            ViewBag.Today = null;
+
+            List<Holiday> tempList = new List<Holiday>();
 
             foreach (Holiday holiday in holidayList)
             {
                 if (holiday.month == DateTime.Now.Month)
                 {
-                    if (holiday.day == DateTime.Now.Day)
+                    if (holiday.day > DateTime.Now.Day && tempList.Count == 0)
                     {
-                        tempDay = holiday;
-                    }
-
-                    if (holiday.day > DateTime.Now.Day)
-                    {
-                        if (tempDay.name == null)
-                        {
-                            ViewBag.No = "There are no holidays today.";
-                        }
-
-                        tempDay = holiday;
-                        return View("Index", tempDay);
+                        tempList.Add(holiday);
                     }
                 }
             }
 
-            if (tempDay.name == null)
+            return View("Index", tempList);
+        }
+
+        public async Task<IActionResult> MonthCheck()
+        {
+            holidayList = await BuildList();
+            ViewBag.Today = null;
+
+            List<Holiday> tempList = new List<Holiday>();
+
+            foreach (Holiday holiday in holidayList)
             {
-                ViewBag.No = "There are no holidays today.";
+                if (holiday.month == DateTime.Now.Month && holiday.day > DateTime.Now.Day)
+                {
+                    tempList.Add(holiday);
+                }
             }
 
-            return View("Index", tempDay);
+            var month = DateTime.Now.Month;
+            string word = "";
+
+            List<string> currentMonth = new List<string>()
+            {
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+            };
+
+            word = currentMonth[month - 1];
+
+            ViewBag.Month = ($"The remaining holidays for the month of {word} are:");
+
+            return View("Index", tempList);
         }
 
         public async Task<List<Holiday>> BuildList()

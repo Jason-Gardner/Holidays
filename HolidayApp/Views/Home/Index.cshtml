@@ -2,31 +2,39 @@
     ViewData["Title"] = "Home Page";
 }
 
-@model Holiday
+@model List<Holiday>
 
-<div class="text-center">
-    <h1 class="display-4">Is today a holiday?</h1>
-    @if (Model != null)
-    {
-        if (Model.name != null)
+    <div class="text-center">
+        <h1 class="display-4" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Welcome to the Holiday Calculator</h1>
+        <br />
+        <h3>Please select an option:</h3>
+        <br />
+        <a class="badge-pill" asp-action="DateCheck" asp-controller="Home">Is today a holiday?</a>
+        <a class="badge-pill" asp-action="NextCheck" asp-controller="Home">When is the next holiday?</a>
+        <a class="badge-pill" asp-action="MonthCheck" asp-controller="Home">What holidays are left this month?</a>
+        <br /><br />
+        @if (ViewBag.Today != null)
         {
-            if(Model.day == DateTime.Now.Day)
+            <h3>@ViewBag.Today</h3>
+        }
+        else
+        {
+            if (Model != null)
             {
-                <h3>Today is @Model.name</h3>
-            }
-            else
-            {
-                <h4>The next holiday is @Model.name on @Model.month/@Model.day/2020.</h4>
+                if (Model.Count == 1)
+                {
+                    <h3>@Model[0].name is on @Model[0].month/@Model[0].day/2020.</h3>
+                }
+                else
+                {
+                    <h3>@ViewBag.Month</h3><br />
+                    @foreach (Holiday holiday in Model)
+                    {
+                        <p>@holiday.name is on @holiday.month/@holiday.day/2020.</p>
+                    }
+                }
+
             }
 
         }
-
-    }
-
-    @if (ViewBag.No != null)
-    {
-        <h3>@ViewBag.No</h3>
-    }
-
-    <a class="badge" asp-action="DateCheck" asp-controller="Home">Check for Any Holidays Today!</a>
-</div>
+    </div>
